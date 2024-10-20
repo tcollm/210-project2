@@ -5,6 +5,29 @@
 extern struct NODE *root;
 extern struct NODE *cwd;
 
+// helper function: navigate through tree given next dir name using current directory; 0 = successfully found dir, 1 = failure
+int navigate_tree(struct NODE *currDir, char *targetDir)
+{
+	// check if the currDir is the target dir
+	if (strcmp(currDir->name, targetDir) == 0)
+	{
+		return 0;
+	}
+
+	// else recursively check the child of the currDir and compare it to target dir
+	struct NODE *child = currDir->childPtr;
+	while (child != NULL)
+	{
+		if (navigate_tree(child, targetDir) == 0)
+		{
+			return 0;
+		}
+		child = child->siblingPtr;
+	}
+
+	return 1;
+}
+
 // make directory
 void mkdir(char pathName[])
 {
@@ -24,13 +47,13 @@ void mkdir(char pathName[])
 	baseName = pathName[i]; // last element in pathName
 
 	// search for dirname node:
-	//  - if absolute (/) start from root
+	//  if absolute (/) start from root
 	//  else (relative) start from CWD (curr working dir)
-	//   - if dirname non-exist: ERROR message and return "FAIL"
-	//   - if exist but not DIR: ERROR msg and return "FAIL"
+	//     if dirname non-exist: ERROR message and return "FAIL"
+	//     if exist but not DIR: ERROR msg and return "FAIL"
 
 	// search for basename (under dirname):
-	//  - if already exists: ERROR msg and return "FAIL"
+	//  if already exists: ERROR msg and return "FAIL"
 
 	//  add new dir node under dirname
 

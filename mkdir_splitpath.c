@@ -44,7 +44,7 @@ struct NODE *splitPath(char *pathName, char *baseName, char *dirName)
 	{
 		// assume entire pathName is baseName
 		strcpy(baseName, pathName);
-		dirName[0] = '\0' // append null terminator
+		dirName[0] = '\0'; // append null terminator
 	}
 	return NULL;
 }
@@ -54,7 +54,7 @@ void mkdir(char pathName[])
 {
 	// break up pathName into dirName (/a/b/c) and basename (d)
 	int LENGTH = strlen(pathName);
-	char *dirName = malloc(LENGTH * sizeof(char));
+	char *dirName = malloc(LENGTH * sizeof(char) + 1); // length plus null terminator
 	char *baseName = malloc(64 * sizeof(char));
 
 	splitPath(pathName, dirName, baseName);
@@ -69,7 +69,11 @@ void mkdir(char pathName[])
 	// check for if dir name is empty?
 
 	// Navigate through directories and find parent directory node
-	if (check_tree(parentDir, dirName) == 1)
+	if (dirName[0] == '\0') // if dirName is empty, assume cwd
+	{
+		strcpy(dirName, cwd->name);
+	}
+	else if (check_tree(parentDir, dirName) == 1)
 	{
 		printf("ERROR: Directory '%s' does not exist\n", dirName);
 		free(dirName);
@@ -80,7 +84,7 @@ void mkdir(char pathName[])
 	// check if dir already exists
 	if (check_tree(parentDir, baseName) == 0)
 	{
-		printf("ERROR: '%c' already exists", baseName);
+		printf("ERROR: '%s' already exists", baseName);
 		free(dirName);
 		free(baseName);
 		return;

@@ -35,18 +35,21 @@ int findNode(struct NODE *current, const char *target)
 		return 0;
 	}
 
+	printf("TEST 00: current = '%s\n", current->name);
 	// target is found
 	if (strcmp(current->name, target) == 0)
 	{
 		return 1;
 	}
 
+	printf("TEST 01: child = '%s\n", current->childPtr->name);
 	// recursively search children
 	if (findNode(current->childPtr, target))
 	{
 		return 1;
 	}
 
+	printf("TEST 02: sibling = '%s\n", current->siblingPtr->name);
 	// recursively search siblings
 	if (findNode(current->siblingPtr, target))
 	{
@@ -67,13 +70,15 @@ void mkdir(char pathName[])
 		parentDir = root;
 	}
 
-	int LENGTH = strlen(pathName);
+	char baseName[64];
 
-	// for node in tree
-	// check if pathName is the same as child or siblings
-	if (findNode(parentDir, pathName))
+	// copy end of pathName to baseName
+	strncpy(baseName, pathName + (strrchr(pathName, '/') ? (strrchr(pathName, '/') - pathName + 1) : 0), 64);
+	// baseName[64] = '\0'; // Null-terminate the baseName?
+
+	if (findNode(parentDir, baseName))
 	{
-		printf("ERROR: '%c' already exists\n", pathName[LENGTH - 1]);
+		printf("ERROR: '%s' already exists\n", baseName);
 		return;
 	}
 
@@ -85,12 +90,15 @@ void mkdir(char pathName[])
 		return;
 	}
 
+	strncpy(newNode->name, baseName, 64);
+	// newNode->name[64] = '\0'; // Ensure null-termination?
+
 	newNode->fileType = 'D';
 	newNode->childPtr = NULL;
 	newNode->siblingPtr = NULL;
 	newNode->parentPtr = parentDir;
 
-	printf("MKDIR SUCCESS: node '%s' successfully created", pathName);
+	printf("MKDIR SUCCESS: node '%s' successfully created\n", pathName);
 
 	return;
 }
